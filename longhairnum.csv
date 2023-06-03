@@ -1,0 +1,37 @@
+﻿imageid,id,replicate,num,body,hairlength,hairdensity
+f1_abdomen_01_001,f1,1,38,abdomen,long,F
+f1_abdomen_01_001,f1,2,26,abdomen,long,F
+f1_abdomen_01_001,f1,3,16,abdomen,long,F
+f1_thorax_01_001,f1,1,82,thorax,long,T
+f1_thorax_01_001,f1,2,73,thorax,long,T
+f1_thorax_01_002 ,f1,3,60,thorax,long,T
+f2_abdomen_01_001,f2,1,25,abdomen,long,F
+f2_abdomen_01_001,f2,2,31,abdomen,long,F
+f2_abdomen_01_001,f2,3,53,abdomen,long,F
+f2_thorax_01_001 ,f2,1,35,thorax,long,T
+f2_thorax_01_001 ,f2,2,42,thorax,long,T
+f2_thorax_01_001 ,f2,3,30,thorax,long,T
+m1_abdomen_01 ,m1,1,33,abdomen,long,F
+m1_abdomen_01 ,m1,2,34,abdomen,long,F
+m1_abdomen_01 ,m1,3,35,abdomen,long,F
+m1_thorax_01 ,m1,1,68,thorax,long,T
+m1_thorax_01 ,m1,2,51,thorax,long,T
+m1_thorax_01 ,m1,3,52,thorax,long,T
+m2_abdomen_01 ,m2,1,27,abdomen,long,F
+m2_abdomen_01 ,m2,2,19,abdomen,long,F
+m2_abdomen_01 ,m2,3,23,abdomen,long,F
+m2_thorax_01,m2,1,45,thorax,long,T
+m2_thorax_01,m2,2,37,thorax,long,T
+m2_thorax_01,m2,3,79,thorax,long,T
+f1_abdomen_01_001,f1,1,102,abdomen,short,T
+f1_abdomen_01_001,f1,2,128,abdomen,short,T
+f1_abdomen_01_001,f1,3,256,abdomen,short,T
+f2_abdomen_01_001 copy 2,f2,1,85,abdomen,short,T
+f2_abdomen_01_001 copy 2,f2,2,83,abdomen,short,T
+f2_abdomen_01_001 copy 2,f2,3,109,abdomen,short,T
+m1_abdomen_01 copy,m1,1,103,abdomen,short,T
+m1_abdomen_01 copy,m1,2,95,abdomen,short,T
+m1_abdomen_01 copy,m1,3,81,abdomen,short,T
+m2_abdomen_01 copy,m2,1,79,abdomen,short,T
+m2_abdomen_01 copy,m2,2,65,abdomen,short,T
+m2_abdomen_01 copy,m2,3,95,abdomen,short,T

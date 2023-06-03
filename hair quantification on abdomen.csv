@@ -1,0 +1,25 @@
+﻿id,replicate,num,type
+f1_abdomen_01_001,1,68,long
+f1_abdomen_01_001,2,41,long
+f1_abdomen_01_001,3,35,long
+f2_abdomen_01_001,1,35,long
+f2_abdomen_01_001,2,63,long
+f2_abdomen_01_001,3,97,long
+m1_abdomen_01 copy,1,61,long
+m1_abdomen_01 copy,2,49,long
+m1_abdomen_01 copy,3,65,long
+m2_abdomen_01 copy,1,46,long
+m2_abdomen_01 copy,2,40,long
+m2_abdomen_01 copy,3,38,long
+f1_abdomen_01_001,1,156,short
+f1_abdomen_01_001,2,205,short
+f1_abdomen_01_001,3,373,short
+f2_abdomen_01_001,1,148,short
+f2_abdomen_01_001,2,129,short
+f2_abdomen_01_001,3,139,short
+m1_abdomen_01 copy,1,129,short
+m1_abdomen_01 copy,2,111,short
+m1_abdomen_01 copy,3,126,short
+m2_abdomen_01 copy,1,128,short
+m2_abdomen_01 copy,2,90,short
+m2_abdomen_01 copy,3,92,short
