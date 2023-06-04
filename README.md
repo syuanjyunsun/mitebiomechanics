@@ -20,7 +20,7 @@ Explanations for variables:
 Fieldanalysis: 
 Date: date of trapping event
 year: year of trapping event
-site: G(Gamlingay Wood)/W (Waresley Wood)
+site: G (Gamlingay Wood)/W (Waresley Wood)
 id: individual id
 Trap: specific sites of trapping
 body: beetle body parts
@@ -40,4 +40,10 @@ bigabdomen: number of P. carabi on the abdomen of a given beetle
 bigpronotum: number of P. carabi on the pronotum of a given beetle
 bigelytra: number of P. carabi on the elytra of a given beetle
 bignum: total number of P. carabi on a given beetle
-
+predbighead: predicted number of P. carabi on the head of a given beetle, when multiplying the total number of mites by the percentage of each body part
+predbigthorax: predicted number of P. carabi on the thorax of a given beetle, when multiplying the total number of mites by the percentage of each body part	
+predbigabdomen: predicted number of P. carabi on the abdomen of a given beetle, when multiplying the total number of mites by the percentage of each body part		
+predbigpronotum: predicted number of P. carabi on the pronotum of a given beetle, when multiplying the total number of mites by the percentage of each body part		
+predbigelytra: predicted number of P. carabi on the elytra of a given beetle, when multiplying the total number of mites by the percentage of each body part
+newbigmiteintensity: density of P. carabi (local number divided by local surface area) on a given body part
+oldbigintensity:
