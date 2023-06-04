@@ -56,3 +56,16 @@ smallnum: total number of M. nataliae on a given beetle
 newsmallmiteintensity: density of M. nataliae (local number divided by local surface area) on a given body part
 oldsmallintensity: total density of M. nataliae (total number divided by total surface area) of a beetle
 
+force:
+miteid/id: individual id of mite	
+mite: species of mite	
+substrate: tested on substrate or on beetle	
+tr: specific body parts that mites were tested	
+angles: angles of pulling force	
+force: strength of pulling force (mN)
+
+hair quantification on abdomen:
+id: beetle individual id
+replicate: replicates of sampled area on a given beetle
+num: number of hairs
+type: type of hair (long/short)
