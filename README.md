@@ -46,4 +46,13 @@ predbigabdomen: predicted number of P. carabi on the abdomen of a given beetle, 
 predbigpronotum: predicted number of P. carabi on the pronotum of a given beetle, when multiplying the total number of mites by the percentage of each body part		
 predbigelytra: predicted number of P. carabi on the elytra of a given beetle, when multiplying the total number of mites by the percentage of each body part
 newbigmiteintensity: density of P. carabi (local number divided by local surface area) on a given body part
-oldbigintensity:
+oldbigintensity: total density of P. carabi (total number divided by total surface area) of a beetle
+smallhead: number of M. nataliae on the head of a given beetle
+smallthorax: number of M. nataliae on the thorax of a given beetle	
+smallabdomen: number of M. nataliae on the abdomen of a given beetle	
+smallpronotum: number of M. nataliae on the pronotum of a given beetle	
+smallelytra: number of M. nataliae on the elytra of a given beetle	
+smallnum: total number of M. nataliae on a given beetle	
+newsmallmiteintensity: density of M. nataliae (local number divided by local surface area) on a given body part
+oldsmallintensity: total density of M. nataliae (total number divided by total surface area) of a beetle
+
