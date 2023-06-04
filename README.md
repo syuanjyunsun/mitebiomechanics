@@ -69,3 +69,43 @@ id: beetle individual id
 replicate: replicates of sampled area on a given beetle
 num: number of hairs
 type: type of hair (long/short)
+
+labspacecompetition:
+id: beetle individual id
+tr: mite density treatments (eg l50s50, meaning 50 P. carabi + 50 M. nataliae)
+body: specific body parts
+mite: mite species
+num: number of mites
+newintensity: the density of mites (for P. carabi or M. nataliae) on each specific body part
+bodysize: pronotum width of a beetle
+sex: sex of a beetle
+bignum: number of P. carabi placed 
+bigintensity: the total density of P. carabi on a beetle
+smallnum: number of M. nataliae placed
+smallintensity: the total density of M. nataliae on a beetle
+naturalsetting: mite density for natural setting comparison (1), i.e. P. carabi ranging from 1, 10, 50, whereas, M. nataliae ranging from 1, 3, 5.
+
+longhairnum:
+imageid: image id of each beetle
+id: individual beetle id	
+replicate: replicated sampling sites of each image	
+num: number of hair	
+body: beetle's body parts	
+hairlength: hair type as long or short 	
+hairdensity: T for comparing long hair density on thorax vs short hair density on abdomen
+
+mite reproduction:
+pair: pairing id 	
+wt: carcass mass (g)	
+bl: block of experiment	
+male: specific family that the male originated
+female: specific family that the female originated	
+mitetr: mite species
+mitenum: number of mite offspring
+
+padarea:
+videoid: video id
+mite: mite species
+miteid: id of individual mite
+stepid: step id of each individual mite
+area: pad contact area (um^2)
