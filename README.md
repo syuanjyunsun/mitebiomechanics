@@ -27,10 +27,17 @@ body: beetle body parts
 Sex: sex of beetles
 bodysize: pronotum width of beetles
 totalarea: total surface area of a given beetle (mm^2)
-area: surface area of a given body part of a beetle
-head:
-thorax:
-abdomen
-pronotum
-elytra
+area: surface area of a given body part of a given beetle
+head: surface area of the head of a given beetle
+thorax: surface area of the thorax of a given beetle
+abdomen: surface area of the abdomen of a given beetle
+pronotum: surface area of the pronotum of a given beetle
+elytra: surface area of the elytra of a given beetle
+presence: presence of P. carabi only (big), M. nataliae only (small), both (both), or none (none)
+bighead: number of P. carabi on the head of a given beetle
+bigthorax: number of P. carabi on the thorax of a given beetle
+bigabdomen: number of P. carabi on the abdomen of a given beetle
+bigpronotum: number of P. carabi on the pronotum of a given beetle
+bigelytra: number of P. carabi on the elytra of a given beetle
+bignum: total number of P. carabi on a given beetle
 
