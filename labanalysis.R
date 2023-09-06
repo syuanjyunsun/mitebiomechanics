@@ -34,7 +34,7 @@ newdatacs<-datacs %>%
   mutate(anewintensity=log10((newintensity+0.01)+1))
 
 #analysis for P. carabi
-model=glmer(anewintensity~bigintensity*body+(1|id),data=newdatacb)
+model=glmer(anewintensity~(poly(bigintensity,degree=2)[,2]+poly(bigintensity,degree=2)[,1])*body+(1|id),data=newdatacb)
 Anova(model,type=3)
 
 #post-hoc analysis
@@ -42,7 +42,7 @@ model.lst<-lstrends(model, specs = c('body'), var = 'bigintensity')
 pairs(model.lst)
 
 #analysis for M. nataliae
-model=glmer(anewintensity~smallintensity*body+(1|id),data=newdatacs)
+model=glmer(anewintensity~(poly(smallintensity,degree=2)[,2]+poly(smallintensity,degree=2)[,1])*body+(1|id),data=newdatacs)
 Anova(model,type=3)
 
 #post-hoc analysis
@@ -62,7 +62,57 @@ newdatacb<-datacb %>%
 newdatacs<-datacs %>%
   mutate(anewintensity=log10((newintensity+0.01)+1))
 
-#compare 1, 10, 50 P.carabi x 1,3,5 M.nataliae to see the role of intra- and inter-specific competition
+
+
+#1. compare 1 nataliae x 1,5,10,25,50 P. carabi
+model=glmer(anewintensity~(poly(bigintensity,degree=2)[,2]+poly(bigintensity,degree=2)[,1])*body+(1|id),data=newdatacb)
+
+Anova(model,type=3)
+
+model.lst<-lstrends(model, specs = c('body'), var = 'bigintensity')
+pairs(model.lst)
+
+#Prop of P. carabi on each body part
+
+big<-ggplot(newdatacb,aes(x=bigintensity,y=num/bignum,color=body, linetype=body))+
+  geom_point()+
+  geom_smooth(method=glm,method.args=list(family=binomial(link="logit")),se=FALSE,alpha=0.3,size=1)+
+  scale_linetype_manual(values=c("solid","dashed","dashed","solid","dashed"))+
+  xlab(expression('Total '*italic(P.carabi)*' density (no./mm^2)'))+
+  ylab(expression('Proportion of '*italic(P.carabi)*' on each body part'))+
+  scale_color_manual(values=c("#d53e4f","#fdae61","#fee08b","#abdda4","#3288bd"))+
+  scale_fill_manual(values=c("#d53e4f","#fdae61","#fee08b","#abdda4","#3288bd"))+
+  theme_classic()+
+  scale_y_continuous(limits=c(0,1))+
+  theme(axis.text=element_text(size=12),axis.title = element_text(size = 14),legend.title=element_blank(),legend.key.size=unit(2,"lines"),legend.text=element_text(size=12),
+  )
+big
+
+#2. compare 1 carabi x 1,3,5,10,25,50 nataliae
+model2=glmer(anewintensity~(poly(smallintensity,degree=2)[,2]+poly(smallintensity,degree=2)[,1])*body+(1|id),data=newdatacs)
+Anova(model2,type=3)
+
+model.lst<-lstrends(model2, specs = c('body'), var = 'smallintensity')
+pairs(model.lst)
+
+newdatacs<-newdatacs[newdatacs$bignum=="1",]
+small<-ggplot(newdatacs,aes(x=smallintensity,y=num/smallnum,color=body,linetype=body))+
+  geom_point()+
+  geom_smooth(method=glm,method.args=list(family=binomial(link="logit")),se=FALSE,alpha=0.3)+
+  scale_linetype_manual(values=c("dashed","solid","dashed","dashed","solid"))+
+  xlab(expression('Total '*italic(M.nataliae)*' density (no./mm^2)'))+
+  ylab(expression('Proportion of '*italic(M.nataliae)*' on each body part'))+
+  scale_color_manual(values=c("#d53e4f","#fdae61","#fee08b","#abdda4","#3288bd"))+
+  scale_fill_manual(values=c("#d53e4f","#fdae61","#fee08b","#abdda4","#3288bd"))+
+  theme_classic()+
+  theme(axis.text=element_text(size=12),axis.title = element_text(size = 14),legend.title=element_blank(),legend.key.size=unit(2,"lines"),legend.text=element_text(size=12),
+  )
+small
+
+ggarrange(big,small, labels= c("A", "B"),ncol = 2, nrow = 1,widths=c(1,1),common.legend = TRUE,legend="bottom")
+
+#the combined effect of intra-specific and inter-specific competition
+#compare 1,5,10,25,50 P.carabi x 1,3,5 M.nataliae to see the role of intra- and inter-specific competition
 datanaturalsetting=data[data$naturalsetting=="1",]
 datanaturalsetting$body <- factor(datanaturalsetting$body, levels=c("head", "thorax", "pronotum", "elytra","abdomen"))
 #log transform newintensity
@@ -73,33 +123,24 @@ newdatanaturalsetting<-datanaturalsetting %>%
 snewdatanaturalsetting=newdatanaturalsetting[newdatanaturalsetting$mite=="M. nataliae",]
 bnewdatanaturalsetting=newdatanaturalsetting[newdatanaturalsetting$mite=="P. carabi",]
 
-#analyse density of P.carabi
-model=glmer(anewintensity~(smallintensity)*body+bigintensity+(1|id),data=snewdatanaturalsetting)
+#analyse density of M. nataliae
+model=glmer(anewintensity~(poly(bigintensity,degree=2)[,2]+poly(bigintensity,degree=2)[,1]+poly(smallintensity,degree=2)[,2]+poly(smallintensity,degree=2)[,1])*body+(1|id),data=snewdatanaturalsetting)
 #post-hoc analysis
 model.lst<-lstrends(model, specs = c('body'), var = 'smallintensity')
 pairs(model.lst)
 
 #analyse density of P.carabi
-model=glmer(anewintensity~(smallintensity)+bigintensity*body+(1|id),data=bnewdatanaturalsetting)
+model=glmer(anewintensity~(poly(bigintensity,degree=2)[,2]+poly(bigintensity,degree=2)[,1]+poly(smallintensity,degree=2)[,2]+poly(smallintensity,degree=2)[,1])*body+(1|id),data=bnewdatanaturalsetting)
 Anova(model,type=3)
 
 #post-hoc analysis
 model.lst<-lstrends(model, specs = c('body'), var = 'bigintensity')
 pairs(model.lst)
 
-####NEW analysis suggested by Becky####
-#1. compare 1 nataliae x 1,5,10,25,50 P. carabi
-model=glmer(anewintensity~bigintensity*body+(1|id),data=newdatacb)
 
-Anova(model,type=3)
-
-model.lst<-lstrends(model, specs = c('body'), var = 'bigintensity')
-pairs(model.lst)
-
-#set intercept as 0
-big<-ggplot(newdatacb,aes(x=bigintensity,y=newintensity,color=body,fill=body))+
+big<-ggplot(bnewdatanaturalsetting,aes(x=bigintensity,y=newintensity,color=body,fill=body))+
   geom_point()+
-  geom_smooth(method=lm,formula = y~0+x,se=TRUE,alpha=0.3)+
+  geom_smooth(method=lm,formula = y~poly(x,2),se=TRUE,alpha=0.3)+
   xlab(expression('Total '*italic(P.carabi)*' density (no./mm^2)'))+
   ylab(expression('Local '*italic(P.carabi)*' density (no./mm^2)'))+
   scale_color_manual(values=c("#d53e4f","#fdae61","#fee08b","#abdda4","#3288bd"))+
@@ -110,16 +151,22 @@ big<-ggplot(newdatacb,aes(x=bigintensity,y=newintensity,color=body,fill=body))+
 
 big
 
-#2. compare 1 carabi x 1,3,5,10,25,50 nataliae
-model2=glmer(anewintensity~smallintensity*body+(1|id),data=newdatacs)
-Anova(model2,type=3)
-
-model.lst<-lstrends(model2, specs = c('body'), var = 'smallintensity')
-pairs(model.lst)
-
-small<-ggplot(newdatacs,aes(x=smallintensity,y=newintensity,color=body,fill=body))+
+big2<-ggplot(bnewdatanaturalsetting,aes(x=smallintensity,y=newintensity,color=body,fill=body))+
   geom_point()+
-  geom_smooth(method=lm,formula = y~0+x,se=TRUE,alpha=0.3)+
+  geom_smooth(method=lm,formula = y~poly(x,1),se=FALSE,alpha=0.3,linetype="dashed")+
+  xlab(expression('Total '*italic(M.nataliae)*' density (no./mm^2)'))+
+  ylab(expression('Local '*italic(P.carabi)*' density (no./mm^2)'))+
+  scale_color_manual(values=c("#d53e4f","#fdae61","#fee08b","#abdda4","#3288bd"))+
+  scale_fill_manual(values=c("#d53e4f","#fdae61","#fee08b","#abdda4","#3288bd"))+
+  theme_classic()+
+  theme(axis.text=element_text(size=12),axis.title = element_text(size = 14),legend.title=element_blank()
+  )
+
+big2
+
+small<-ggplot(snewdatanaturalsetting,aes(x=smallintensity,y=newintensity,color=body,fill=body))+
+  geom_point()+
+  geom_smooth(method=lm,formula = y~poly(x,1),se=TRUE,alpha=0.3)+
   xlab(expression('Total '*italic(M.nataliae)*' density (no./mm^2)'))+
   ylab(expression('Local '*italic(M.nataliae)*' density (no./mm^2)'))+
   scale_color_manual(values=c("#d53e4f","#fdae61","#fee08b","#abdda4","#3288bd"))+
@@ -130,7 +177,21 @@ small<-ggplot(newdatacs,aes(x=smallintensity,y=newintensity,color=body,fill=body
 
 small
 
-ggarrange(big,small, labels= c("A", "B"),ncol = 2, nrow = 1,widths=c(1,1),common.legend = TRUE,legend="bottom")
+small2<-ggplot(snewdatanaturalsetting,aes(x=bigintensity,y=newintensity,color=body,fill=body))+
+  geom_point()+
+  geom_smooth(method=lm,formula = y~poly(x,1),se=FALSE,alpha=0.3,linetype="dashed")+
+  xlab(expression('Total '*italic(P.carabi)*' density (no./mm^2)'))+
+  ylab(expression('Local '*italic(M.nataliae)*' density (no./mm^2)'))+
+  scale_color_manual(values=c("#d53e4f","#fdae61","#fee08b","#abdda4","#3288bd"))+
+  scale_fill_manual(values=c("#d53e4f","#fdae61","#fee08b","#abdda4","#3288bd"))+
+  theme_classic()+
+  theme(axis.text=element_text(size=12),axis.title = element_text(size = 14),legend.title=element_blank()
+  )
+
+small2
+
+
+ggarrange(big,big2,small,small2, labels= c("A", "B", "C", "D"),ncol = 2, nrow = 2,widths=c(1,1),common.legend = TRUE,legend="bottom")
 
 
 model=glmer(anewintensity~bigintensity*smallintensity*body+(1|id),data=newdatanaturalsetting)
@@ -144,116 +205,6 @@ Anova(model,type=3)
 model.lst<-lstrends(model, specs = c('body'), var = 'smallintensity')
 model.lst<-lstrends(model, specs = c('body'), var = 'bigintensity')
 pairs(model.lst)
-#Plot for 1 carabi x 1,3,5 nataliae
-sdatanaturalsetting1=snewdatanaturalsetting[snewdatanaturalsetting$bignum=="1",]
-#Plot for 10 carabi x 1,3,5 nataliae
-sdatanaturalsetting10=snewdatanaturalsetting[snewdatanaturalsetting$bignum=="10",]
-#Plot for 50 carabi x 1,3,5 nataliae
-sdatanaturalsetting50=snewdatanaturalsetting[snewdatanaturalsetting$bignum=="50",]
-
-
-A<-ggplot(sdatanaturalsetting1,aes(x=smallintensity,y=newintensity,color=body,fill=body))+
-  geom_point()+
-  geom_smooth(method=lm,formula = y~0+x,se=TRUE,alpha=0.3)+
-  xlab(expression('Total '*italic(M.nataliae)*' density (no./mm^2)'))+
-  ylab(expression('Local '*italic(M.nataliae)*' density (no./mm^2)'))+
-  scale_color_manual(values=c("#d53e4f","#fdae61","#fee08b","#abdda4","#3288bd"))+
-  scale_fill_manual(values=c("#d53e4f","#fdae61","#fee08b","#abdda4","#3288bd"))+
-  scale_x_continuous(limits=c(0,0.06))+
-  scale_y_continuous(limits=c(0,0.4))+
-  theme_classic()+
-  theme(axis.text=element_text(size=12),axis.title = element_text(size = 14),legend.title=element_blank()
-  )
-
-A
-
-B<-ggplot(sdatanaturalsetting10,aes(x=smallintensity,y=newintensity,color=body,fill=body))+
-  geom_point()+
-  geom_smooth(method=lm,formula = y~0+x,se=TRUE,alpha=0.3)+
-  xlab(expression('Total '*italic(M.nataliae)*' density (no./mm^2)'))+
-  ylab(expression('Local '*italic(M.nataliae)*' density (no./mm^2)'))+
-  scale_color_manual(values=c("#d53e4f","#fdae61","#fee08b","#abdda4","#3288bd"))+
-  scale_fill_manual(values=c("#d53e4f","#fdae61","#fee08b","#abdda4","#3288bd"))+
-  scale_x_continuous(limits=c(0,0.06))+
-  scale_y_continuous(limits=c(0,0.4))+
-  theme_classic()+
-  theme(axis.text=element_text(size=12),axis.title = element_text(size = 14),legend.title=element_blank()
-  )
-
-B
-
-C<-ggplot(sdatanaturalsetting50,aes(x=smallintensity,y=newintensity,color=body,fill=body))+
-  geom_point()+
-  geom_smooth(method=lm,formula = y~0+x,se=TRUE,alpha=0.3)+
-  xlab(expression('Total '*italic(M.nataliae)*' density (no./mm^2)'))+
-  ylab(expression('Local '*italic(M.nataliae)*' density (no./mm^2)'))+
-  scale_color_manual(values=c("#d53e4f","#fdae61","#fee08b","#abdda4","#3288bd"))+
-  scale_fill_manual(values=c("#d53e4f","#fdae61","#fee08b","#abdda4","#3288bd"))+
-  scale_x_continuous(limits=c(0,0.06))+
-  scale_y_continuous(limits=c(0,0.4))+
-  theme_classic()+
-  theme(axis.text=element_text(size=12),axis.title = element_text(size = 14),legend.title=element_blank()
-  )
-
-C
-
-library(cowplot)
-library(ggpubr)
-
-#Plot for 1 carabi x 1,3,5 nataliae
-bdatanaturalsetting1=bnewdatanaturalsetting[bnewdatanaturalsetting$smallnum=="1",]
-#Plot for 10 carabi x 1,3,5 nataliae
-bdatanaturalsetting3=bnewdatanaturalsetting[bnewdatanaturalsetting$smallnum=="3",]
-#Plot for 50 carabi x 1,3,5 nataliae
-bdatanaturalsetting5=bnewdatanaturalsetting[bnewdatanaturalsetting$smallnum=="5",]
-
-
-D<-ggplot(bdatanaturalsetting1,aes(x=bigintensity,y=newintensity,color=body,fill=body))+
-  geom_point()+
-  geom_smooth(method=lm,formula = y~0+x,se=TRUE,alpha=0.3)+
-  xlab(expression('Total '*italic(P.carabi)*' density (no./mm^2)'))+
-  ylab(expression('Local '*italic(P.carabi)*' density (no./mm^2)'))+
-  scale_color_manual(values=c("#d53e4f","#fdae61","#fee08b","#abdda4","#3288bd"))+
-  scale_fill_manual(values=c("#d53e4f","#fdae61","#fee08b","#abdda4","#3288bd"))+
-  scale_x_continuous(limits=c(0,0.6))+
-  scale_y_continuous(limits=c(0,2.0))+
-  theme_classic()+
-  theme(axis.text=element_text(size=12),axis.title = element_text(size = 14),legend.title=element_blank()
-  )
-
-D
-
-E<-ggplot(bdatanaturalsetting3,aes(x=bigintensity,y=newintensity,color=body,fill=body))+
-  geom_point()+
-  geom_smooth(method=lm,formula = y~0+x,se=TRUE,alpha=0.3)+
-  xlab(expression('Total '*italic(P.carabi)*' density (no./mm^2)'))+
-  ylab(expression('Local '*italic(P.carabi)*' density (no./mm^2)'))+
-  scale_color_manual(values=c("#d53e4f","#fdae61","#fee08b","#abdda4","#3288bd"))+
-  scale_fill_manual(values=c("#d53e4f","#fdae61","#fee08b","#abdda4","#3288bd"))+
-  scale_x_continuous(limits=c(0,0.6))+
-  scale_y_continuous(limits=c(0,2.0))+
-  theme_classic()+
-  theme(axis.text=element_text(size=12),axis.title = element_text(size = 14),legend.title=element_blank()
-  )
-
-E
-
-G<-ggplot(bdatanaturalsetting5,aes(x=bigintensity,y=newintensity,color=body,fill=body))+
-  geom_point()+
-  geom_smooth(method=lm,formula = y~0+x,se=TRUE,alpha=0.3)+
-  xlab(expression('Total '*italic(P.carabi)*' density (no./mm^2)'))+
-  ylab(expression('Local '*italic(P.carabi)*' density (no./mm^2)'))+
-  scale_color_manual(values=c("#d53e4f","#fdae61","#fee08b","#abdda4","#3288bd"))+
-  scale_fill_manual(values=c("#d53e4f","#fdae61","#fee08b","#abdda4","#3288bd"))+
-  scale_x_continuous(limits=c(0,0.6))+
-  scale_y_continuous(limits=c(0,2.0))+
-  theme_classic()+
-  theme(axis.text=element_text(size=12),axis.title = element_text(size = 14),legend.title=element_blank()
-  )
-
-G
-
-ggarrange(D,E,G,A,B,C, labels= c("A", "B","C","D","E","F"),ncol = 3, nrow = 2,widths=c(1,1),common.legend = TRUE,legend="bottom")
 
 ####mite reproduction####
 data=read.csv("mite reproduction.csv")
