@@ -1,12 +1,13 @@
 #set working directory
 setwd("/Users/sun/Dropbox/Sun's data/Biomechanics")
-setwd("/Users/syuan-jyunsun/Library/CloudStorage/Dropbox/Sun's data/Biomechanics")
-
+setwd("/Users/syuan-jyunsun/Library/CloudStorage/Dropbox/Sun's data/Biomechanics/Biomechanics data and code")
+setwd("/Users/sun/Library/CloudStorage/Dropbox/Sun's data/Biomechanics/Biomechanics data and code")
 #lab space competition
 library(lme4)
 library(car)
 library(dplyr)
 library(emmeans)
+library(ggplot2)
 
 ####analysis for intra- and inter-specific competition####
 data=read.csv("labspacecompetition.csv")
@@ -33,22 +34,6 @@ newdatacb<-datacb %>%
 newdatacs<-datacs %>%
   mutate(anewintensity=log10((newintensity+0.01)+1))
 
-#analysis for P. carabi
-model=glmer(anewintensity~(poly(bigintensity,degree=2)[,2]+poly(bigintensity,degree=2)[,1])*body+(1|id),data=newdatacb)
-Anova(model,type=3)
-
-#post-hoc analysis
-model.lst<-lstrends(model, specs = c('body'), var = 'bigintensity')
-pairs(model.lst)
-
-#analysis for M. nataliae
-model=glmer(anewintensity~(poly(smallintensity,degree=2)[,2]+poly(smallintensity,degree=2)[,1])*body+(1|id),data=newdatacs)
-Anova(model,type=3)
-
-#post-hoc analysis
-model.lst<-lstrends(model, specs = c('body'), var = 'smallintensity')
-pairs(model.lst)
-
 #specify mite P. carabi
 datacb=data[data$mite=="P. carabi",]
 #specify mite M. nataliae
@@ -63,55 +48,45 @@ newdatacs<-datacs %>%
   mutate(anewintensity=log10((newintensity+0.01)+1))
 
 
-
 #1. compare 1 nataliae x 1,5,10,25,50 P. carabi
-model=glmer(anewintensity~(poly(bigintensity,degree=2)[,2]+poly(bigintensity,degree=2)[,1])*body+(1|id),data=newdatacb)
-
+model=glmer(cbind(num,bignum-num)~bigintensity*body+(1|id),family=binomial(link="logit"),data=newdatacb)
 Anova(model,type=3)
 
-model.lst<-lstrends(model, specs = c('body'), var = 'bigintensity')
-pairs(model.lst)
-
-#Prop of P. carabi on each body part
 
 big<-ggplot(newdatacb,aes(x=bigintensity,y=num/bignum,color=body, linetype=body))+
-  geom_point()+
+  geom_point(size=2,alpha=0.8)+
   geom_smooth(method=glm,method.args=list(family=binomial(link="logit")),se=FALSE,alpha=0.3,size=1)+
   scale_linetype_manual(values=c("solid","dashed","dashed","solid","dashed"))+
   xlab(expression('Total '*italic(P.carabi)*' density (no./mm^2)'))+
   ylab(expression('Proportion of '*italic(P.carabi)*' on each body part'))+
-  scale_color_manual(values=c("#d53e4f","#fdae61","#fee08b","#abdda4","#3288bd"))+
-  scale_fill_manual(values=c("#d53e4f","#fdae61","#fee08b","#abdda4","#3288bd"))+
+  scale_color_manual(values=c("#ef476f","#ffb703","#7dcfb6","#AAB8C2","#14213d"))+
+  scale_fill_manual(values=c("#ef476f","#ffb703","#7dcfb6","#AAB8C2","#14213d"))+
   theme_classic()+
   scale_y_continuous(limits=c(0,1))+
   theme(axis.text=element_text(size=12),axis.title = element_text(size = 14),legend.title=element_blank(),legend.key.size=unit(2,"lines"),legend.text=element_text(size=12),
   )
 big
 
-#2. compare 1 carabi x 1,3,5,10,25,50 nataliae
-model2=glmer(anewintensity~(poly(smallintensity,degree=2)[,2]+poly(smallintensity,degree=2)[,1])*body+(1|id),data=newdatacs)
-Anova(model2,type=3)
-
-model.lst<-lstrends(model2, specs = c('body'), var = 'smallintensity')
-pairs(model.lst)
+#compare 1 carabi x 1,3,5,10,25,50 nataliae
 
 newdatacs<-newdatacs[newdatacs$bignum=="1",]
+model=glmer(cbind(num,smallnum-num)~smallintensity*body+(1|id),family=binomial(link="logit"),data=newdatacs)
+Anova(model,type=3)
+
 small<-ggplot(newdatacs,aes(x=smallintensity,y=num/smallnum,color=body,linetype=body))+
-  geom_point()+
+  geom_point(size=2,alpha=0.8)+
   geom_smooth(method=glm,method.args=list(family=binomial(link="logit")),se=FALSE,alpha=0.3)+
   scale_linetype_manual(values=c("dashed","solid","dashed","dashed","solid"))+
   xlab(expression('Total '*italic(M.nataliae)*' density (no./mm^2)'))+
   ylab(expression('Proportion of '*italic(M.nataliae)*' on each body part'))+
-  scale_color_manual(values=c("#d53e4f","#fdae61","#fee08b","#abdda4","#3288bd"))+
-  scale_fill_manual(values=c("#d53e4f","#fdae61","#fee08b","#abdda4","#3288bd"))+
+  scale_color_manual(values=c("#ef476f","#ffb703","#7dcfb6","#AAB8C2","#14213d"))+
+  scale_fill_manual(values=c("#ef476f","#ffb703","#7dcfb6","#AAB8C2","#14213d"))+
   theme_classic()+
   theme(axis.text=element_text(size=12),axis.title = element_text(size = 14),legend.title=element_blank(),legend.key.size=unit(2,"lines"),legend.text=element_text(size=12),
   )
 small
 
-ggarrange(big,small, labels= c("A", "B"),ncol = 2, nrow = 1,widths=c(1,1),common.legend = TRUE,legend="bottom")
-
-#the combined effect of intra-specific and inter-specific competition
+#the effect of inter-specific competition controlling for intra-specific competition
 #compare 1,5,10,25,50 P.carabi x 1,3,5 M.nataliae to see the role of intra- and inter-specific competition
 datanaturalsetting=data[data$naturalsetting=="1",]
 datanaturalsetting$body <- factor(datanaturalsetting$body, levels=c("head", "thorax", "pronotum", "elytra","abdomen"))
@@ -123,73 +98,65 @@ newdatanaturalsetting<-datanaturalsetting %>%
 snewdatanaturalsetting=newdatanaturalsetting[newdatanaturalsetting$mite=="M. nataliae",]
 bnewdatanaturalsetting=newdatanaturalsetting[newdatanaturalsetting$mite=="P. carabi",]
 
-#analyse density of M. nataliae
-model=glmer(anewintensity~(poly(bigintensity,degree=2)[,2]+poly(bigintensity,degree=2)[,1]+poly(smallintensity,degree=2)[,2]+poly(smallintensity,degree=2)[,1])*body+(1|id),data=snewdatanaturalsetting)
-#post-hoc analysis
-model.lst<-lstrends(model, specs = c('body'), var = 'smallintensity')
-pairs(model.lst)
+#analyse how M. nataliae affect P. carabi
+model=glmer(cbind(num,bignum-num)~(bigintensity+smallintensity)*body+(1|id),family=binomial(link="logit"),data=bnewdatanaturalsetting)
 
-#analyse density of P.carabi
-model=glmer(anewintensity~(poly(bigintensity,degree=2)[,2]+poly(bigintensity,degree=2)[,1]+poly(smallintensity,degree=2)[,2]+poly(smallintensity,degree=2)[,1])*body+(1|id),data=bnewdatanaturalsetting)
-Anova(model,type=3)
+bnewdatanaturalsetting_h=bnewdatanaturalsetting[bnewdatanaturalsetting$body=="head",]
+bnewdatanaturalsetting_t=bnewdatanaturalsetting[bnewdatanaturalsetting$body=="thorax",]
+bnewdatanaturalsetting_p=bnewdatanaturalsetting[bnewdatanaturalsetting$body=="pronotum",]
+bnewdatanaturalsetting_e=bnewdatanaturalsetting[bnewdatanaturalsetting$body=="elytra",]
+bnewdatanaturalsetting_a=bnewdatanaturalsetting[bnewdatanaturalsetting$body=="abdomen",]
 
-#post-hoc analysis
-model.lst<-lstrends(model, specs = c('body'), var = 'bigintensity')
-pairs(model.lst)
+model_h=glmer(cbind(num,bignum-num)~(bigintensity+smallintensity)+(1|id),family=binomial(link="logit"),data=bnewdatanaturalsetting_h)
+model_t=glmer(cbind(num,bignum-num)~(bigintensity+smallintensity)+(1|id),family=binomial(link="logit"),data=bnewdatanaturalsetting_t)
+model_p=glmer(cbind(num,bignum-num)~(bigintensity+smallintensity)+(1|id),family=binomial(link="logit"),data=bnewdatanaturalsetting_p)
+model_e=glmer(cbind(num,bignum-num)~(bigintensity+smallintensity)+(1|id),family=binomial(link="logit"),data=bnewdatanaturalsetting_e)
+model_a=glmer(cbind(num,bignum-num)~(bigintensity+smallintensity)+(1|id),family=binomial(link="logit"),data=bnewdatanaturalsetting_a)
 
+Anova(model_h,type=3)
+Anova(model_t,type=3)
+Anova(model_p,type=3)
+Anova(model_e,type=3)
+Anova(model_a,type=3)
 
-big<-ggplot(bnewdatanaturalsetting,aes(x=bigintensity,y=newintensity,color=body,fill=body))+
+big2<-ggplot(bnewdatanaturalsetting,aes(x=smallintensity,y=num/bignum,color=body, linetype=body))+
   geom_point()+
-  geom_smooth(method=lm,formula = y~poly(x,2),se=TRUE,alpha=0.3)+
-  xlab(expression('Total '*italic(P.carabi)*' density (no./mm^2)'))+
-  ylab(expression('Local '*italic(P.carabi)*' density (no./mm^2)'))+
-  scale_color_manual(values=c("#d53e4f","#fdae61","#fee08b","#abdda4","#3288bd"))+
-  scale_fill_manual(values=c("#d53e4f","#fdae61","#fee08b","#abdda4","#3288bd"))+
-  theme_classic()+
-  theme(axis.text=element_text(size=12),axis.title = element_text(size = 14),legend.title=element_blank()
-  )
-
-big
-
-big2<-ggplot(bnewdatanaturalsetting,aes(x=smallintensity,y=newintensity,color=body,fill=body))+
-  geom_point()+
-  geom_smooth(method=lm,formula = y~poly(x,1),se=FALSE,alpha=0.3,linetype="dashed")+
+  geom_smooth(method=glm,method.args=list(family=binomial(link="logit")),se=FALSE,alpha=0.3,size=1)+
+  scale_linetype_manual(values=c("dashed","solid","dashed","dashed","dashed"))+
   xlab(expression('Total '*italic(M.nataliae)*' density (no./mm^2)'))+
-  ylab(expression('Local '*italic(P.carabi)*' density (no./mm^2)'))+
-  scale_color_manual(values=c("#d53e4f","#fdae61","#fee08b","#abdda4","#3288bd"))+
-  scale_fill_manual(values=c("#d53e4f","#fdae61","#fee08b","#abdda4","#3288bd"))+
+  ylab(expression('Proportion of '*italic(P.carabi)*' on each body part'))+
+  scale_color_manual(values=c("#ef476f","#ffb703","#7dcfb6","#AAB8C2","#14213d"))+
+  scale_fill_manual(values=c("#ef476f","#ffb703","#7dcfb6","#AAB8C2","#14213d"))+
   theme_classic()+
-  theme(axis.text=element_text(size=12),axis.title = element_text(size = 14),legend.title=element_blank()
+  scale_y_continuous(limits=c(0,1))+
+  theme(axis.text=element_text(size=12),axis.title = element_text(size = 14),legend.title=element_blank(),legend.key.size=unit(2,"lines"),legend.text=element_text(size=12),
   )
-
 big2
 
-small<-ggplot(snewdatanaturalsetting,aes(x=smallintensity,y=newintensity,color=body,fill=body))+
-  geom_point()+
-  geom_smooth(method=lm,formula = y~poly(x,1),se=TRUE,alpha=0.3)+
-  xlab(expression('Total '*italic(M.nataliae)*' density (no./mm^2)'))+
-  ylab(expression('Local '*italic(M.nataliae)*' density (no./mm^2)'))+
-  scale_color_manual(values=c("#d53e4f","#fdae61","#fee08b","#abdda4","#3288bd"))+
-  scale_fill_manual(values=c("#d53e4f","#fdae61","#fee08b","#abdda4","#3288bd"))+
-  theme_classic()+
-  theme(axis.text=element_text(size=12),axis.title = element_text(size = 14),legend.title=element_blank()
-  )
+#analyse how M. nataliae affect P. carabi
+model=glmer(cbind(num,smallnum-num)~(bigintensity+smallintensity)*body+(1|id),family=binomial(link="logit"),data=snewdatanaturalsetting)
+Anova(model,type=3)
 
-small
+model=glmer(cbind(num,smallnum-num)~(bigintensity+smallintensity)+body+(1|id),family=binomial(link="logit"),data=snewdatanaturalsetting)
+Anova(model,type=3)
 
-small2<-ggplot(snewdatanaturalsetting,aes(x=bigintensity,y=newintensity,color=body,fill=body))+
-  geom_point()+
-  geom_smooth(method=lm,formula = y~poly(x,1),se=FALSE,alpha=0.3,linetype="dashed")+
-  xlab(expression('Total '*italic(P.carabi)*' density (no./mm^2)'))+
-  ylab(expression('Local '*italic(M.nataliae)*' density (no./mm^2)'))+
-  scale_color_manual(values=c("#d53e4f","#fdae61","#fee08b","#abdda4","#3288bd"))+
-  scale_fill_manual(values=c("#d53e4f","#fdae61","#fee08b","#abdda4","#3288bd"))+
-  theme_classic()+
-  theme(axis.text=element_text(size=12),axis.title = element_text(size = 14),legend.title=element_blank()
-  )
+snewdatanaturalsetting_h=snewdatanaturalsetting[snewdatanaturalsetting$body=="head",]
+snewdatanaturalsetting_t=snewdatanaturalsetting[snewdatanaturalsetting$body=="thorax",]
+snewdatanaturalsetting_p=snewdatanaturalsetting[snewdatanaturalsetting$body=="pronotum",]
+snewdatanaturalsetting_e=snewdatanaturalsetting[snewdatanaturalsetting$body=="elytra",]
+snewdatanaturalsetting_a=snewdatanaturalsetting[snewdatanaturalsetting$body=="abdomen",]
 
-small2
+model_h=glmer(cbind(num,smallnum-num)~(bigintensity+smallintensity)+(1|id),family=binomial(link="logit"),data=snewdatanaturalsetting_h)
+model_t=glmer(cbind(num,smallnum-num)~(bigintensity+smallintensity)+(1|id),family=binomial(link="logit"),data=snewdatanaturalsetting_t)
+model_p=glmer(cbind(num,smallnum-num)~(bigintensity+smallintensity)+(1|id),family=binomial(link="logit"),data=snewdatanaturalsetting_p)
+model_e=glmer(cbind(num,smallnum-num)~(bigintensity+smallintensity)+(1|id),family=binomial(link="logit"),data=snewdatanaturalsetting_e)
+model_a=glmer(cbind(num,smallnum-num)~(bigintensity+smallintensity)+(1|id),family=binomial(link="logit"),data=snewdatanaturalsetting_a)
 
+Anova(model_h,type=3)
+Anova(model_t,type=3)
+Anova(model_p,type=3)
+Anova(model_e,type=3)
+Anova(model_a,type=3)
 
 ggarrange(big,big2,small,small2, labels= c("A", "B", "C", "D"),ncol = 2, nrow = 2,widths=c(1,1),common.legend = TRUE,legend="bottom")
 
@@ -209,31 +176,14 @@ pairs(model.lst)
 ####mite reproduction####
 data=read.csv("mite reproduction.csv")
 data$mitetr <- factor(data$mitetr, levels=c("P. carabi", "M. nataliae"))
-model=glmer(mitenum~mitetr+wt+(1|bl),poisson,data=data)
-Anova(model,type=3)
+
+model=glmer.nb(mitenum~mitetr+wt+(1|bl),data=data)
+
 datab=data[data$mitetr=="P. carabi",]
 datas=data[data$mitetr=="M. nataliae",]
+
 mean(datab$mitenum)
 mean(datas$mitenum)
-
-#detection of overdispersion
-sum(resid(model, type = "pearson")^2)/model$df.resid
-
-#negative binomial distribution
-model=glmer.nb(mitenum~mitetr+wt+(1|bl),data=data)
-Anova(model,type=3)
-
-install.packages("palmerpenguins")
-library(palmerpenguins)
-ggboxplot(data ,
-          x = "mitetr",
-          y = "mitenum",
-          xlab = "Species of mite",
-          ylab = "Number of mite offspring",
-          color = "mitetr",
-          palette = "npg",
-          add = "jitter",
-          shape = "mitetr",legend="FALSE")
 
 ####quantification of hair proportion####
 data=read.csv("hair quantification on abdomen.csv")
